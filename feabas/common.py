@@ -11,8 +11,10 @@ import scipy.sparse.csgraph as csgraph
 from skimage.morphology import convex_hull_image
 
 from feabas import storage
-from feabas.config import TS_RETRY, TS_TIMEOUT, DEFAULT_AVG_DEFORM
+from feabas.config import TS_RETRY, TS_TIMEOUT, DEFAULT_AVG_DEFORM, get_numpy_thread
 
+Nthreads = get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 Match = namedtuple('Match', ('xy0', 'xy1', 'weight', 'strain'), defaults=(DEFAULT_AVG_DEFORM,))
 
 

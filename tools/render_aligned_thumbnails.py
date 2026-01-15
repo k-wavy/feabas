@@ -11,6 +11,8 @@ from feabas.mesh import Mesh
 import feabas.constant as const
 from feabas.renderer import MeshRenderer
 
+Nthreads = config.get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 default_thumbnail_resolution = config.thumbnail_resolution()
 
 def render_one_thumbnail(thumbnail_path, mesh_path, out_dir, **kwargs):

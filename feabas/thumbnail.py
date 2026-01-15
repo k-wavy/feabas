@@ -17,6 +17,9 @@ from feabas.dal import StreamLoader
 from feabas.matcher import section_matcher, global_translation_matcher
 from feabas.aligner import read_matches_from_h5
 
+
+Nthreads = config.get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 H5File = storage.h5file_class()
 
 

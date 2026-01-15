@@ -11,6 +11,8 @@ from feabas.spatial import scale_coordinates
 from feabas import config, storage
 from feabas.concurrent import submit_to_workers
 
+Nthreads = config.get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 H5File = storage.h5file_class()
 
 @lru_cache(maxsize=10)

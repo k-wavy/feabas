@@ -288,6 +288,16 @@ def limit_numpy_thread(nthreads):
     os.environ["NUMEXPR_NUM_THREADS"] = nthread_str
 
 
+def get_numpy_thread():
+    nthread_str = os.getenv("OMP_NUM_THREADS")
+    if nthread_str is None:
+        return 1
+    try:
+        return int(nthread_str)
+    except ValueError:
+        return 1
+
+
 def set_numpy_thread_from_num_workers(num_workers):
     num_cpus = general_settings()['cpu_budget']
     if num_workers > num_cpus:

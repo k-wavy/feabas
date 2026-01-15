@@ -16,8 +16,10 @@ from feabas import common, logging, dal, storage
 from feabas.spatial import Geometry
 from feabas.mesh import Mesh
 from feabas.renderer import render_whole_mesh, MeshRenderer
-from feabas.config import CHECKPOINT_TIME_INTERVAL
+from feabas.config import CHECKPOINT_TIME_INTERVAL, get_numpy_thread
 
+Nthreads = get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 H5File = storage.h5file_class()
 
 def get_image_loader(src_dir, **kwargs):

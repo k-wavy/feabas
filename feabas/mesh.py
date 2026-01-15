@@ -18,9 +18,11 @@ import triangle
 
 from feabas import common, dal, material, spatial, caching
 import feabas.constant as const
-from feabas.config import data_resolution
+from feabas.config import data_resolution, get_numpy_thread
 from feabas.storage import h5file_class, join_paths
 
+Nthreads = get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 H5File = h5file_class()
 
 def gear_constant_to_str(gear_const):

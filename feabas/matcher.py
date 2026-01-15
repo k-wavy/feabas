@@ -8,13 +8,15 @@ import shapely
 import shapely.geometry as shpgeo
 from shapely.ops import unary_union
 
-from feabas.config import DEFAULT_AVG_DEFORM, data_resolution, section_thickness
+from feabas.config import DEFAULT_AVG_DEFORM, data_resolution, section_thickness, get_numpy_thread
 from feabas.concurrent import submit_to_workers
 from feabas.mesh import Mesh
 from feabas.renderer import MeshRenderer
 from feabas import optimizer, dal, common, spatial
 import feabas.constant as const
 
+Nthreads = get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 
 
 def xcorr_fft(img0, img1, conf_mode=const.FFT_CONF_MIRROR, **kwargs):

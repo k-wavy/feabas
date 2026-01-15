@@ -14,8 +14,10 @@ import tensorstore as ts
 
 from feabas import common, caching
 from feabas.storage import File, join_paths, list_folder_content, file_exists
-from feabas.config import DEFAULT_RESOLUTION, TS_TIMEOUT, TS_RETRY
+from feabas.config import DEFAULT_RESOLUTION, TS_TIMEOUT, TS_RETRY, get_numpy_thread
 
+Nthreads = get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 
 # bbox :int: [xmin, ymin, xmax, ymax]
 
@@ -922,7 +924,7 @@ class MosaicLoader(StaticImageLoader):
                     self._cached_block_rtree_generator(box_normalized), interleaved=True)
 
 
-    @ staticmethod
+    @staticmethod
     def _filename_parser(fname, pattern, tile_size):
         """
         given a filename and pattern, return the bboxes. pattern str follows
