@@ -16,8 +16,6 @@ import feabas.constant as const
 from feabas.dal import StreamLoader
 from feabas.matcher import section_matcher, global_translation_matcher
 from feabas.aligner import read_matches_from_h5
-from feabas.visualization import plot_link
-import matplotlib.pyplot as plt
 
 
 Nthreads = config.get_numpy_thread()
@@ -397,7 +395,7 @@ def match_two_thumbnails_LRadon(img0, img1, mask0=None, mask1=None, **kwargs):
                 optm.optimize_affine_cascade(target_gear=const.MESH_GEAR_FIXED)
                 optm.anneal(gear=(const.MESH_GEAR_FIXED, const.MESH_GEAR_MOVING), mode=const.ANNEAL_COPY_EXACT)
                 optm.clear_equation_terms()
-                optm.optimize_linear(tol=1.0e-5, targt_gear=const.MESH_GEAR_MOVING, precondition='sa', tolerated_perturbation=0.01)
+                optm.optimize_linear(tol=1.0e-5, targt_gear=const.MESH_GEAR_MOVING, precondition='sa', tolerated_perturbation=0.05)
                 valid_num = 0
                 xy0_t_list = []
                 xy1_t_list = []
