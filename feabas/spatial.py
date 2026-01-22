@@ -305,9 +305,10 @@ def polygon_area_filter(poly, area_thresh=0, check_exterior=True):
             return poly
     elif hasattr(poly, 'geoms'):
         new_poly_list = []
-        Bs = [p.exterior for p in poly.geoms]
+        subpolys = [p for p in poly.geoms if p.area > 0]
+        Bs = [p.exterior for p in subpolys]
         areas = shapely.area(shapely.polygons(Bs))
-        large_pps = shapely.get_parts(poly)[areas > area_thresh]
+        large_pps = [p for p, ar in zip(subpolys, areas) if ar > area_thresh]
         for pp in large_pps:
             pp_updated = polygon_area_filter(pp, area_thresh=area_thresh, check_exterior=False)
             if not pp_updated.is_empty:
