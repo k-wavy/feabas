@@ -16,6 +16,8 @@ import feabas.constant as const
 from feabas.dal import StreamLoader
 from feabas.matcher import section_matcher, global_translation_matcher
 from feabas.aligner import read_matches_from_h5
+from feabas.visualization import plot_link
+import matplotlib.pyplot as plt
 
 H5File = storage.h5file_class()
 
@@ -383,7 +385,7 @@ def match_two_thumbnails_LRadon(img0, img1, mask0=None, mask1=None, **kwargs):
             optm.clear_links()
             optm.add_link_from_coordinates(0.0, 1.0, mtch.xy0, mtch.xy1,
                                            check_duplicates=False,
-                                           weight=np.full(mtch.num_points, 0.05),
+                                           weight=np.full(mtch.num_points, 0.5),
                                            name='staging')
             staging_link = optm.links.copy()
             if (len(settled_link) > 0) and (mtch.num_points < matchnum_thresh):
@@ -392,7 +394,7 @@ def match_two_thumbnails_LRadon(img0, img1, mask0=None, mask1=None, **kwargs):
                 optm.optimize_affine_cascade(target_gear=const.MESH_GEAR_FIXED)
                 optm.anneal(gear=(const.MESH_GEAR_FIXED, const.MESH_GEAR_MOVING), mode=const.ANNEAL_COPY_EXACT)
                 optm.clear_equation_terms()
-                optm.optimize_linear(tol=1.0e-5, targt_gear=const.MESH_GEAR_MOVING, tolerated_perturbation=0.1)
+                optm.optimize_linear(tol=1.0e-5, targt_gear=const.MESH_GEAR_MOVING, precondition='sa', tolerated_perturbation=0.01)
                 valid_num = 0
                 xy0_t_list = []
                 xy1_t_list = []
