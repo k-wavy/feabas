@@ -19,6 +19,9 @@ from feabas.aligner import read_matches_from_h5
 from feabas.visualization import plot_link
 import matplotlib.pyplot as plt
 
+
+Nthreads = config.get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 H5File = storage.h5file_class()
 
 

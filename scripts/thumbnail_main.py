@@ -187,6 +187,8 @@ def align_thumbnail_pairs(pairnames, image_dir, out_dir, **kwargs):
     import cv2
     import numpy as np
     from feabas import caching, thumbnail, common
+    Nthreads = config.get_numpy_thread()
+    cv2.setNumThreads(Nthreads)
     material_mask_dir = kwargs.pop('material_mask_dir', None)
     region_mask_dir = kwargs.pop('region_mask_dir', None)
     region_labels = kwargs.pop('region_labels', None)
@@ -333,6 +335,8 @@ def render_one_aligned_thumbnail(tform_name, thumbnail_dir, out_dir, **kwargs):
     from feabas.renderer import MeshRenderer
     from feabas import common
     from feabas.dal import StreamLoader
+    Nthreads = config.get_numpy_thread()
+    cv2.setNumThreads(Nthreads)
     src_resolution = kwargs.get('src_resolution', None)
     thumbnail_configs = config.thumbnail_configs()
     if src_resolution is None:

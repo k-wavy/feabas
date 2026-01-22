@@ -8,9 +8,11 @@ from shapely.ops import unary_union, linemerge, polygonize
 
 from feabas import dal, common, material
 import feabas.constant as const
-from feabas.config import data_resolution
+from feabas.config import data_resolution, get_numpy_thread
 from feabas.storage import h5file_class
 
+Nthreads = get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 H5File = h5file_class()
 
 JOIN_STYLE = shpgeo.JOIN_STYLE.mitre

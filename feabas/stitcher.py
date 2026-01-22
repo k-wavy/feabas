@@ -22,8 +22,10 @@ from feabas.optimizer import SLM, relax_mesh_most_deformed
 from feabas import common, caching, storage, logging
 from feabas.spatial import scale_coordinates, fit_affine
 import feabas.constant as const
-from feabas.config import SECTION_THICKNESS, data_resolution, CHECKPOINT_TIME_INTERVAL, MAXIMUM_DEFORM_ALLOWED
+from feabas.config import SECTION_THICKNESS, data_resolution, CHECKPOINT_TIME_INTERVAL, MAXIMUM_DEFORM_ALLOWED, get_numpy_thread
 
+Nthreads = get_numpy_thread()
+cv2.setNumThreads(Nthreads)
 H5File = storage.h5file_class()
 TOLERATED_PERTURBATION = 0.1
 MARGIN_RATIO_SWITCH = 2
