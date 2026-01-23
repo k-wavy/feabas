@@ -2627,9 +2627,10 @@ class Mesh:
                             id1 = id_tr[(k+1):][flags_t]
                             id0 = np.full_like(id1, id_tr[k])
                             collisions_list.append(np.stack((id0, id1), axis=-1))
-                collisions = np.concatenate(collisions_list, axis=0)
-                collisions = np.sort(collisions, axis=-1)
-                collisions = np.unique(collisions, axis=-1)
+                if len(collisions_list) > 0:
+                    collisions = np.concatenate(collisions_list, axis=0)
+                    collisions = np.sort(collisions, axis=-1)
+                    collisions = np.unique(collisions, axis=-1)
         return collisions
 
 
