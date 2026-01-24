@@ -6,7 +6,7 @@ import numpy as np
 import os
 from functools import lru_cache, partial
 
-from feabas.common import numpy_to_str_ascii, imread
+from feabas.common import numpy_to_str_ascii, imread, imwrite
 from feabas.spatial import scale_coordinates
 from feabas import config, storage
 from feabas.concurrent import submit_to_workers
@@ -63,7 +63,7 @@ def generate_match_images(sec_matches, out_dir, ext_out, blksz, ds, resolution, 
         mask1 = cv2.dilate(mask1, skel)
         img_out = np.stack((img*0.7, img*0.7+100*mask0, img*0.7 + 100*mask1), axis=-1)
         img_out = img_out.clip(0, 255).astype(np.uint8)
-        cv2.imwrite(outname, img_out[::ds,::ds,:])
+        imwrite(outname, img_out[::ds,::ds,:])
 
 
 
