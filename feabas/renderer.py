@@ -641,7 +641,7 @@ class MeshRenderer:
             dtp = imgt.dtype
             kk = 2
             weight = (np.arctan((weight - 0.5)*2*kk*np.pi) + np.arctan(kk*np.pi)) / (2*np.arctan(kk*np.pi))
-            imgt = (imgt * (weight.reshape(mask))).astype(dtp)
+            imgt = (imgt * (weight.reshape(mask.shape))).astype(dtp)
         return imgt
 
 
