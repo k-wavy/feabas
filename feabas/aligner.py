@@ -247,6 +247,7 @@ class Stack:
                     raise RuntimeError('no match list found.')
         self.match_list = self.filtered_match_list(match_list=match_list)
         self.save_overflow = kwargs.get('save_overflow', True)
+        self._update_resting = kwargs.get('update_resting', True)
         self._logger = kwargs.get('logger', None)
 
 
@@ -425,6 +426,8 @@ class Stack:
             M = Mesh.combine_mesh(anchored_meshes, save_material=True)
             outname = storage.join_paths(out_dir, secname + '.h5')
             if M.modified_in_current_session or not storage.file_exists(outname):
+                if self._update_resting:
+                    M.anneal(gear=(const.MESH_GEAR_MOVING, const.MESH_GEAR_FIXED), mode=const.ANNEAL_COPY_EXACT)
                 M.save_to_h5(outname, vertex_flags=const.MESH_GEARS, save_material=True)
                 saved = True
                 if (flag is not None) and hasattr(self, '_mesh_versions') and (self._mesh_versions is not None):

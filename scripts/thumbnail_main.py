@@ -589,25 +589,31 @@ if __name__ == '__main__':
             mesh_configs = opt_configs.get('meshing_config', {})
             mfunc = partial(generate_mesh_from_mask, out_dir=tmp_mesh_dir, material_table=material_table.save_to_json(),
                             resolution=thumbnail_resolution, logger=logger_info[0], **mesh_configs)
-            tasks = []
+            mesh_tasks = []
+            more_to_optimize = False
             for sname in secname_list:
                 tform_name = storage.join_paths(tform_dir, sname+'.h5')
                 mask_name = storage.join_paths(mat_mask_dir, sname+'.png')
+                mesh_name = storage.join_paths(tmp_mesh_dir,  sname+'.h5')
                 img_name = storage.join_paths(img_dir, sname+'.'+thumbnail_format)
                 if storage.file_exists(tform_name, use_cache=True):
-                    continue  
+                    continue
+                more_to_optimize = True
+                if storage.file_exists(mesh_name, use_cache=True):
+                    continue
                 if storage.file_exists(mask_name, use_cache=True):
-                    tasks.append({'secname': sname, 'mask_name': mask_name})
+                    mesh_tasks.append({'secname': sname, 'mask_name': mask_name})
                 elif storage.file_exists(img_name, use_cache=True):
                     logger.warning(f'{sname} meshing: {mask_name} not found, use rectangular mesh.')
-                    tasks.append({'secname': sname, 'mask_size': img_name})
+                    mesh_tasks.append({'secname': sname, 'mask_size': img_name})
                 else:
                     logger.error(f'{sname} meshing: {mask_name} not found.')
-            if len(tasks) > 0:
+            if len(mesh_tasks) > 0:
                 logger.info('generating meshes for thumbnails')
-                for _ in submit_to_workers(mfunc, kwargs=tasks, num_workers=num_workers):
+                for _ in submit_to_workers(mfunc, kwargs=mesh_tasks, num_workers=num_workers):
                     pass
             # optimization
+            if more_to_optimize:
                 logger.info('optimizing...')
                 chunk_settings = opt_configs.get('chunk_settings', {'chunked_to_depth': 0})
                 stack_config = opt_configs.get('stack_config', {})
