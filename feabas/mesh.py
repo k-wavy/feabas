@@ -1890,15 +1890,17 @@ class Mesh:
             polygons = polygons.buffer(0)
         else:
             pps0 = shapely.get_parts(polygons)
-            child_polygons = [p for p in pps0 if p.is_valid]
-            invalid_grouped_chains = [c for c, p in zip(grouped_chains, pps0) if (not p.is_valid)]
+            p_notvalid = [(not p.is_valid) or np.sum([s.is_ccw for s in p.interiors])>0 for p in pps0]
+            child_polygons = [p for flag, p in zip(p_notvalid, pps0) if (not flag)]
+            invalid_grouped_chains = [c for flag, c in zip(p_notvalid, grouped_chains) if flag]
             if len(invalid_grouped_chains) > 0:
                 invalid_chains = [c for cc in invalid_grouped_chains for c in cc]
                 Ls = shapely.node(spatial.index_chain_to_linearrings(vertices, invalid_chains))
                 Lt = shapely.buffer(Ls, self._epsilon, join_style=2, single_sided=True)
-                Lt = unary_union(Lt)
+                Lt = unary_union(Lt)       
                 pps = shapely.buffer(shapely.get_parts(shapely.polygonize(Ls)), 0)
-                interior_flags = shapely.relate_pattern(Lt, pps, 'T********')
+                # interior_flags = shapely.relate_pattern(Lt, pps, 'T********')
+                interior_flags = shapely.area(shapely.intersection(Lt, pps)) > 0
                 child_polygons = child_polygons + [p for flg, p in zip(interior_flags, pps) if flg]
             polygons = unary_union(child_polygons)
         return polygons
@@ -2569,7 +2571,9 @@ class Mesh:
             segments, _ = self.segments_w_triangle_ids(tri_mask=tri_mask)
             lines = shapely.get_parts(shpgeo.MultiLineString(list(vertices[segments])))
             G = self.shapely_regions(gear=gear, tri_mask=tri_mask, offsetting=False)
-            flags = shapely.relate_pattern(G, lines, 'T********')
+            #flags = shapely.relate_pattern(G, lines, 'T********')
+            Lt = shapely.intersection(G.boundary, lines)
+            flags = shapely.length(Lt) != shapely.length(lines)
             if np.any(flags):
                 collided_segs = segments[flags]
                 Ls = shapely.node(unary_union(lines[flags]))
@@ -2622,7 +2626,8 @@ class Mesh:
                     id_tr = tid_tr[tid_p == id_p]
                     ggs = ggs0[id_tr]
                     for k in range(len(ggs)-1):
-                        flags_t = shapely.relate_pattern(ggs[k], ggs[(k+1):], 'T********')
+                        # flags_t = shapely.relate_pattern(ggs[k], ggs[(k+1):], 'T********')
+                        flags_t = shapely.area(shapely.intersection(ggs[k], ggs[(k+1):])) > 0
                         if np.any(flags_t):
                             id1 = id_tr[(k+1):][flags_t]
                             id0 = np.full_like(id1, id_tr[k])
