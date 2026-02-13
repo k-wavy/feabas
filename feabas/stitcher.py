@@ -1340,7 +1340,7 @@ class MontageRenderer:
         scale = kwargs.pop('scale', 1)
         fillval = kwargs.get('fillval', self.image_loader.default_fillval)
         dtype_out = kwargs.get('dtype_out', self.image_loader.dtype)
-        affine_tolerance = kwargs.get('affine_tolerance', 0)
+        affine_tolerance = kwargs.get('affine_tolerance', 0.2)
         sigma = 2.5 # sigma for pyramid generation.
         weight_eps = 1e-3
         bbox = scale_coordinates(bbox, 1/scale)
@@ -1798,7 +1798,7 @@ class MontageRenderer:
                 A_a = fit_affine(v0, v1)
                 A = A_a[:2,:2]
                 t = A_a[-1,:2]
-                res = np.max(np.sum((v1 - v0 @ A - t)**2, axis=-1)) ** 0.5
+                res = np.max(np.sum((v0 - v1 @ A - t)**2, axis=-1)) ** 0.5
                 self._affine_approximators.append((A, t, res))
         return self._affine_approximators
 
