@@ -466,8 +466,8 @@ def iterative_xcorr_matcher_w_mesh(mesh0, mesh1, image_loader0, image_loader1, s
     render_weight_threshold = kwargs.get('render_weight_threshold', 0)
     stiffness_lambda = kwargs.pop('stiffness_lambda', 1)
     affine_approximated_render = kwargs.pop('affine_approximated_render', True)
-    if num_workers > 1 and batch_size is not None:
-        batch_size = max(1, batch_size / num_workers)
+    # if num_workers > 1 and batch_size is not None:
+    #     batch_size = max(1, batch_size / num_workers)
     if isinstance(image_loader0, dal.AbstractImageLoader):
         loader_dict0 = image_loader0.init_dict()
     else:
