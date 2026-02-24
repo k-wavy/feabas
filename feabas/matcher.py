@@ -678,6 +678,11 @@ def iterative_xcorr_matcher_w_mesh(mesh0, mesh1, image_loader0, image_loader1, s
         opt.add_link_from_coordinates(mesh0.uid, mesh1.uid, xy0, xy1,
                         gear=(const.MESH_GEAR_MOVING, const.MESH_GEAR_MOVING), weight=wt,
                         check_duplicates=False, render_weight_threshold=render_weight_threshold)
+        if len(opt.links) == 0:
+            if not initialized:
+                return invalid_output
+            else:
+                break
         if max_dis > 0.1:
             if linear_system:
                 opt.optimize_linear(tol=opt_tol_t, **kwargs_opt)
