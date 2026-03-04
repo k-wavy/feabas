@@ -392,7 +392,7 @@ def match_two_thumbnails_LRadon(img0, img1, mask0=None, mask1=None, **kwargs):
             if (len(settled_link) > 0) and (mtch.num_points < matchnum_thresh):
                 for lnk in settled_link.values():
                     optm.add_link(lnk, check_relevance=False, check_duplicates=False)
-                optm.optimize_affine_cascade(target_gear=const.MESH_GEAR_FIXED)
+                optm.optimize_affine_cascade(target_gear=const.MESH_GEAR_FIXED, svd_clip=None)
                 optm.anneal(gear=(const.MESH_GEAR_FIXED, const.MESH_GEAR_MOVING), mode=const.ANNEAL_COPY_EXACT)
                 optm.clear_equation_terms()
                 optm.optimize_linear(tol=1.0e-5, targt_gear=const.MESH_GEAR_MOVING, precondition='sa', tolerated_perturbation=0.05)

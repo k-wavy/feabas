@@ -516,7 +516,7 @@ def iterative_xcorr_matcher_w_mesh(mesh0, mesh1, image_loader0, image_loader1, s
         opt.add_link_from_coordinates(mesh0.uid, mesh1.uid, xy0, xy1,
             gear=(const.MESH_GEAR_INITIAL, const.MESH_GEAR_INITIAL), weight=weight,
             check_duplicates=False, render_weight_threshold=render_weight_threshold)
-        opt.optimize_affine_cascade(start_gear=const.MESH_GEAR_FIXED, target_gear=const.MESH_GEAR_FIXED, svd_clip=(1,1))
+        opt.optimize_affine_cascade(start_gear=const.MESH_GEAR_FIXED, target_gear=const.MESH_GEAR_FIXED, svd_clip=None)
         opt.anneal(gear=(const.MESH_GEAR_FIXED, const.MESH_GEAR_MOVING), mode=const.ANNEAL_CONNECTED_RIGID)
         if linear_system:
             opt.optimize_linear(tol=1e-6, precondition='smoothed_aggregation', **kwargs_opt)
