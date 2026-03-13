@@ -1903,6 +1903,10 @@ class Mesh:
                 interior_flags = shapely.area(shapely.intersection(Lt, pps)) > 0
                 child_polygons = child_polygons + [p for flg, p in zip(interior_flags, pps) if flg]
             polygons = unary_union(child_polygons)
+            _, tids = self.segments_w_triangle_ids(tri_mask=tri_mask)
+            vtri = vertices[self.triangles[tids]]
+            ps = unary_union(shapely.polygons(list(vtri)))
+            polygons = polygons.union(ps)
         return polygons
 
 
