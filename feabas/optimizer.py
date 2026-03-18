@@ -4,6 +4,7 @@ import numpy as np
 import pyamg
 import scipy
 from scipy import sparse
+from scipy.sparse.linalg import LinearOperator
 from scipy.spatial import KDTree
 import time
 
@@ -1960,8 +1961,9 @@ def solve(A, b, solver, x0=None, tol=1e-7, atol=None, maxiter=None, M=None, **kw
         tolerated_perturbation = tolerated_perturbation * dx_t[:b.size]
     if isinstance(M, str):
         if M.lower().startswith(('smooth', 'sa')):
-            ml = pyamg.smoothed_aggregation_solver(A)
+            ml = pyamg.smoothed_aggregation_solver(A, presmoother=('gauss_seidel', {'sweep': 'forward'}), postsmoother=('gauss_seidel', {'sweep': 'backward'}), symmetry='symmetric', smooth=('jacobi', {'omega': 4.0/3.0}))
             M =  ml.aspreconditioner(cycle='V')
+            M = LinearOperator(shape=A.shape, matvec=M.matvec, rmatvec=M.matvec)
         else:
             A_diag = A.diagonal()
             if A_diag.max() > 0:
