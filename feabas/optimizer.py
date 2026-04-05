@@ -1959,17 +1959,18 @@ def solve(A, b, solver, x0=None, tol=1e-7, atol=None, maxiter=None, M=None, **kw
         dx_t = np.stack((sin_t, cos_t), axis=-1)
         dx_t = dx_t.ravel()
         tolerated_perturbation = tolerated_perturbation * dx_t[:b.size]
+    A_diag = A.diagonal()
+    if A_diag.max() > 0:
+        M0 = sparse.diags(1/(A_diag.clip(min(1.0, A_diag.max()/1000),None))) # Jacobi precondition
+    else:
+        M0 = None
     if isinstance(M, str):
         if M.lower().startswith(('smooth', 'sa')):
             ml = pyamg.smoothed_aggregation_solver(A, presmoother=('gauss_seidel', {'sweep': 'forward'}), postsmoother=('gauss_seidel', {'sweep': 'backward'}), symmetry='symmetric', smooth=('jacobi', {'omega': 4.0/3.0}))
             M =  ml.aspreconditioner(cycle='V')
             M = LinearOperator(shape=A.shape, matvec=M.matvec, rmatvec=M.matvec)
         else:
-            A_diag = A.diagonal()
-            if A_diag.max() > 0:
-                M = sparse.diags(1/(A_diag.clip(min(1.0, A_diag.max()/1000),None))) # Jacobi precondition
-            else:
-                M = None
+            M = M0
     if (maxiter == 0) or (np.linalg.norm(b) == 0):
         return np.zeros_like(b)
     if edc is not None:
@@ -2033,7 +2034,7 @@ def solve(A, b, solver, x0=None, tol=1e-7, atol=None, maxiter=None, M=None, **kw
                 elif solver == 'minres':
                     x, _ = sparse.linalg.minres(A, b, **kwargs_solver)
                 else:
-                    raise ValueError
+                    raise NotImplementedError
                 cost0 = np.linalg.norm(A.dot(x) - b)
                 if cost0 > cb.min_cost:
                     x = cb.solution
@@ -2044,6 +2045,12 @@ def solve(A, b, solver, x0=None, tol=1e-7, atol=None, maxiter=None, M=None, **kw
             except KeyboardInterrupt:
                 x = cb.solution
                 break
+            except ValueError: # smoothed aggregation maybe non symmetric
+                if M is not M0:
+                    M = M0
+                    continue
+                else :
+                    raise
             if (cost <= atol) or (not check_converge):
                 break
             if tolerated_perturbation is not None:
